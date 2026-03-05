@@ -48,20 +48,27 @@ class OAuthClientController extends Controller
 
         $confidential = $request->boolean('confidential', true);
 
+        // Generate our own plain-text secret BEFORE creation so we can flash it.
+        // $client->secret after save is already bcrypt-hashed by Passport's model cast.
+        $plainSecret = $confidential ? Str::random(40) : null;
+
         if ($request->grant_type === 'authorization_code') {
             $client = $this->clients->createAuthorizationCodeGrantClient(
                 $request->name,
                 [$request->redirect],
                 $confidential
             );
+            // Override Passport's internally-generated secret with our known plain value
+            if ($confidential) {
+                $client->forceFill(['secret' => $plainSecret])->save();
+            }
         } else {
             // client_credentials
             $client = $this->clients->createClientCredentialsGrantClient($request->name);
-            
-            // Apply optional settings for client_credentials if provided
+
             $client->forceFill([
                 'confidential' => $confidential,
-                'secret'       => $confidential ? ($client->secret ?? Str::random(40)) : null,
+                'secret'       => $plainSecret,
             ])->save();
 
             if ($request->redirect) {
@@ -73,7 +80,7 @@ class OAuthClientController extends Controller
         session()->flash('new_oauth_client', [
             'name'      => $client->name,
             'id'        => $client->id,
-            'secret'    => $client->secret ?? null,
+            'secret'    => $plainSecret,   // plain text, before Passport hashes it
             'grant'     => $request->grant_type,
         ]);
 
