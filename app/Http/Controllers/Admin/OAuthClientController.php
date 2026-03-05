@@ -109,7 +109,7 @@ class OAuthClientController extends Controller
         $client = Client::findOrFail($id);
         $client->update([
             'name'     => $request->name,
-            'redirect' => [$request->redirect],   // Passport v13 stores as JSON array
+            'redirect_uris' => [$request->redirect],   // Passport v13 stores as JSON array
         ]);
 
         return redirect()->route('oauth.client.index')

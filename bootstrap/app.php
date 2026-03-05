@@ -36,6 +36,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
             'prevent-back-history' => \App\Http\Middleware\PreventBackButtonMiddleware::class,
+            'sso.dashboard' => \App\Http\Middleware\SsoDashboardGuard::class,
         ]);
 
     })

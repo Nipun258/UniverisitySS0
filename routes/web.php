@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\OAuthClientController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SiteSettingController;
+use App\Http\Controllers\Auth\SsoAdminLoginController;
 use App\Http\Controllers\Backend\UserController;
 use App\Http\Controllers\Setup\CategoryController;
 use App\Http\Controllers\Setup\CategoryTypeController;
@@ -17,7 +18,7 @@ Route::get('/', function () {
 
 Route::group(['middleware' => 'prevent-back-history'], function () {
 
-    Route::get('/dashboard', [AdminController::class, 'index'])->middleware(['auth', 'verified', 'permission:dashbord.view'])->name('dashboard');
+    Route::get('/dashboard', [AdminController::class, 'index'])->middleware(['auth', 'verified', 'sso.dashboard', 'permission:dashbord.view'])->name('dashboard');
 
     Route::middleware('auth', 'permission:dashbord.view')->prefix('profile')->group(function () {
 
@@ -148,4 +149,18 @@ Route::group(['middleware' => 'prevent-back-history'], function () {
     }); // OAuth Client Management
 
 }); //prevent back history
+
+// ── SSO Admin Portal — Separate login (NOT the same as regular /login) ──
+Route::prefix('sso-admin')->name('sso.admin.')->group(function () {
+    // Guest-only routes
+    Route::middleware('guest')->group(function () {
+        Route::get('/login',  [SsoAdminLoginController::class, 'create'])->name('login');
+        Route::post('/login', [SsoAdminLoginController::class, 'store'])->name('login.post');
+    });
+    // Logout (auth required)
+    Route::post('/logout', [SsoAdminLoginController::class, 'destroy'])
+         ->name('logout')
+         ->middleware('auth');
+});
+
 require __DIR__ . '/auth.php';

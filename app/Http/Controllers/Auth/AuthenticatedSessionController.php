@@ -46,7 +46,31 @@ class AuthenticatedSessionController extends Controller
 
         }
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        // 1. OAuth authorization flow → return to Passport to complete the handshake
+        $intended = session()->pull('url.intended', null);
+        if ($intended && str_contains($intended, '/oauth/authorize')) {
+            return redirect($intended);
+        }
+
+        // 2. Direct login → initiate the OAuth flow for the Master Client.
+        //    Because the user is now authenticated in the SSO session, Passport
+        //    will auto-complete the handshake and land them in the client app
+        //    fully authenticated — without needing a second login.
+        $clientId    = config('sso.master_client_id');
+        $redirectUri = config('sso.master_client_redirect');
+
+        if ($clientId && $redirectUri) {
+            $query = http_build_query([
+                'client_id'     => $clientId,
+                'redirect_uri'  => $redirectUri,
+                'response_type' => 'code',
+                'scope'         => '',
+            ]);
+            return redirect('/oauth/authorize?' . $query);
+        }
+
+        // Fallback if master client is not configured
+        return redirect('/login');
     }
 
     /**

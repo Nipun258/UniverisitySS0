@@ -27,6 +27,7 @@ class User extends Authenticatable
         'last_seen',
         'last_login_at',
         'last_login_ip',
+        'is_sso_admin',
     ];
 
     /**
@@ -48,7 +49,8 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'         => 'hashed',
+            'is_sso_admin'     => 'boolean',
         ];
     }
 
