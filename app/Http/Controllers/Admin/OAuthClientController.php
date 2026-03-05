@@ -49,29 +49,24 @@ class OAuthClientController extends Controller
         $confidential = $request->boolean('confidential', true);
 
         if ($request->grant_type === 'authorization_code') {
-            $client = $this->clients->create(
-                userId: null,
-                name: $request->name,
-                redirect: $request->redirect,
-                provider: null,
-                personalAccess: false,
-                password: false,
-                confidential: $confidential,
+            $client = $this->clients->createAuthorizationCodeGrantClient(
+                $request->name,
+                [$request->redirect],
+                $confidential
             );
         } else {
             // client_credentials
-            $generatedSecret = $confidential ? Str::random(40) : null;
-            $client = Client::create([
-                'user_id'                   => null,
-                'name'                      => $request->name,
-                'secret'                    => $generatedSecret,
-                'provider'                  => null,
-                'redirect'                  => [$request->redirect],
-                'personal_access_client'    => false,
-                'password_client'           => false,
-                'revoked'                   => false,
-                'grant_types'               => ['client_credentials'],
-            ]);
+            $client = $this->clients->createClientCredentialsGrantClient($request->name);
+            
+            // Apply optional settings for client_credentials if provided
+            $client->forceFill([
+                'confidential' => $confidential,
+                'secret'       => $confidential ? ($client->secret ?? Str::random(40)) : null,
+            ])->save();
+
+            if ($request->redirect) {
+                $this->clients->update($client, $client->name, [$request->redirect]);
+            }
         }
 
         // Flash credentials — secret is only visible at creation time
