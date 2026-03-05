@@ -19,6 +19,7 @@ Route::get('/', function () {
 Route::group(['middleware' => 'prevent-back-history'], function () {
 
     Route::get('/dashboard', [AdminController::class, 'index'])->middleware(['auth', 'verified', 'sso.dashboard', 'permission:dashbord.view'])->name('dashboard');
+    Route::get('/dashboard/live-traffic', [AdminController::class, 'liveTraffic'])->middleware(['auth', 'sso.dashboard'])->name('dashboard.live-traffic');
 
     Route::middleware('auth', 'permission:dashbord.view')->prefix('profile')->group(function () {
 
