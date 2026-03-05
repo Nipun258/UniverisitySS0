@@ -55,6 +55,64 @@
                           </div> --}}
                           </div><!-- col-md-6 -->
                           </div><!-- row -->
+
+                          {{-- Status & SSO Admin row --}}
+                          <div class="row">
+
+                            <div class="col-md-6">
+                              <div class="form-group">
+                                <label>Account Status <span class="text-danger">*</span></label>
+                                <div class="d-flex align-items-center mt-1" style="gap:14px;">
+                                  <div class="custom-control custom-radio">
+                                    <input class="custom-control-input" type="radio" id="status_active"
+                                           name="status" value="1"
+                                           {{ $editData->status == 1 ? 'checked' : '' }}>
+                                    <label class="custom-control-label text-success font-weight-bold"
+                                           for="status_active">
+                                      <i class="fas fa-check-circle mr-1"></i> Active
+                                    </label>
+                                  </div>
+                                  <div class="custom-control custom-radio">
+                                    <input class="custom-control-input" type="radio" id="status_inactive"
+                                           name="status" value="0"
+                                           {{ $editData->status == 0 ? 'checked' : '' }}>
+                                    <label class="custom-control-label text-danger font-weight-bold"
+                                           for="status_inactive">
+                                      <i class="fas fa-times-circle mr-1"></i> Inactive
+                                    </label>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-6">
+                              <div class="form-group">
+                                <label>SSO Admin Access</label>
+                                <div class="d-flex align-items-center mt-1" style="gap:14px;">
+                                  <div class="custom-control custom-radio">
+                                    <input class="custom-control-input" type="radio" id="sso_admin_yes"
+                                           name="is_sso_admin" value="1"
+                                           {{ $editData->is_sso_admin ? 'checked' : '' }}>
+                                    <label class="custom-control-label text-danger font-weight-bold"
+                                           for="sso_admin_yes">
+                                      <i class="fas fa-shield-alt mr-1"></i> Yes — Allow Dashboard
+                                    </label>
+                                  </div>
+                                  <div class="custom-control custom-radio">
+                                    <input class="custom-control-input" type="radio" id="sso_admin_no"
+                                           name="is_sso_admin" value="0"
+                                           {{ !$editData->is_sso_admin ? 'checked' : '' }}>
+                                    <label class="custom-control-label font-weight-bold"
+                                           for="sso_admin_no">
+                                      <i class="fas fa-ban mr-1"></i> No
+                                    </label>
+                                  </div>
+                                </div>
+                                <small class="text-muted">Grants access to the SSO Admin Portal (<code>/sso-admin/login</code>)</small>
+                              </div>
+                            </div>
+
+                          </div><!-- row -->
                             </div>
                             <!-- /.card-body -->
                             @can('user.updation')

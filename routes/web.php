@@ -11,9 +11,7 @@ use App\Http\Controllers\Setup\CategoryController;
 use App\Http\Controllers\Setup\CategoryTypeController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', fn() => redirect()->route('login'));
 
 
 Route::group(['middleware' => 'prevent-back-history'], function () {

@@ -39,6 +39,7 @@ class UserController extends Controller implements HasMiddleware
                 ->groupBy('users.id','users.status','users.name','users.email')
                 ->selectRaw('GROUP_CONCAT(roles.name) as roles')
                 ->orderby('users.id')
+                ->where('users.is_sso_admin',1)
                 ->get();
 
     return view('admin.user.index',compact('users'));
@@ -107,22 +108,24 @@ class UserController extends Controller implements HasMiddleware
         return view('admin.user.edit',compact('editData'));
     }
 
-    public function UserUpdate(Request $request,$id){
-
-        $validatedData = $request->validate([
+    public function UserUpdate(Request $request, $id)
+    {
+        $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255'
+            'email' => 'required|string|email|max:255',
         ]);
 
-        $data = User::find($id);
-        $data->name = $request->name;
-        $data->email = $request->email;
+        $data = User::findOrFail($id);
+        $data->name         = $request->name;
+        $data->email        = $request->email;
+        $data->status       = $request->boolean('status') ? 1 : 0;
+        $data->is_sso_admin = $request->boolean('is_sso_admin') ? 1 : 0;
         $data->save();
 
-        $notification = array(
-           'message' => 'User Updated Successfully',
-           'alert-type' => 'info'
-        );
+        $notification = [
+            'message'    => 'User Updated Successfully',
+            'alert-type' => 'info',
+        ];
 
         return redirect()->route('user.view')->with($notification);
     }
