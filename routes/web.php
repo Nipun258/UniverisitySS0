@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\OAuthClientController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SiteSettingController;
@@ -134,6 +135,17 @@ Route::group(['middleware' => 'prevent-back-history'], function () {
         Route::post('/update', [SiteSettingController::class, 'update'])->name('site.settings.update')->middleware('permission:site.settings.update');
         Route::get('/restore/default', [SiteSettingController::class, 'restoreDefault'])->name('site.settings.restore.default')->middleware('permission:site.settings.restore.default');
     }); //user profile controller route list
+
+    // OAuth Client Management (SSO Server)
+    Route::middleware(['auth'])->prefix('oauth-clients')->group(function () {
+        Route::get('/', [OAuthClientController::class, 'index'])->name('oauth.client.index')->middleware('permission:oauth.client.index');
+        Route::get('/create', [OAuthClientController::class, 'create'])->name('oauth.client.create')->middleware('permission:oauth.client.create');
+        Route::post('/store', [OAuthClientController::class, 'store'])->name('oauth.client.store')->middleware('permission:oauth.client.create');
+        Route::get('/edit/{id}', [OAuthClientController::class, 'edit'])->name('oauth.client.edit')->middleware('permission:oauth.client.update');
+        Route::put('/update/{id}', [OAuthClientController::class, 'update'])->name('oauth.client.update')->middleware('permission:oauth.client.update');
+        Route::get('/destroy/{id}', [OAuthClientController::class, 'destroy'])->name('oauth.client.destroy')->middleware('permission:oauth.client.delete');
+        Route::get('/regenerate/{id}', [OAuthClientController::class, 'regenerateSecret'])->name('oauth.client.regenerate')->middleware('permission:oauth.client.update');
+    }); // OAuth Client Management
 
 }); //prevent back history
 require __DIR__ . '/auth.php';

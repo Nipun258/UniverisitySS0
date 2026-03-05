@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
+use Laravel\Passport\Passport;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,5 +26,10 @@ class AppServiceProvider extends ServiceProvider
                 return true;
             }
         });
+
+        // Register Passport's OAuth authorization consent screen view.
+        // Required by Passport v13 - without this the /oauth/authorize
+        // endpoint throws "Target [AuthorizationViewResponse] is not instantiable".
+        Passport::authorizationView('oauth.authorize');
     }
 }
