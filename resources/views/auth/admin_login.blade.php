@@ -351,7 +351,7 @@
                 @csrf
 
                 <div class="form-group">
-                    <label for="email">USJNet ID</label>
+                    <label for="email">Email</label>
                     <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="your@email.sjp.ac.lk" required autofocus>
                 </div>
 
