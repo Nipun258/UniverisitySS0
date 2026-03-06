@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ApplicationController;
 use App\Http\Controllers\Api\AvailabilityController;
 use App\Http\Controllers\Api\PersonalTokenController;
 use App\Http\Controllers\Api\UserInfoController;
@@ -34,6 +35,14 @@ Route::middleware('auth:api')->group(function () {
     |----------------------------------------------------------------------
     */
     Route::get('/availability', [AvailabilityController::class, 'check']);
+
+    /*
+    |----------------------------------------------------------------------
+    | Applications List – master client calls this to get the list of
+    | available client apps to display in the App Portal.
+    |----------------------------------------------------------------------
+    */
+    Route::get('/applications', [ApplicationController::class, 'index']);
 
     /*
     |----------------------------------------------------------------------

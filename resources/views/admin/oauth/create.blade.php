@@ -92,15 +92,53 @@
                                 </small>
                             </div>
 
-                        </div>
-                        <div class="card-footer">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save"></i> Create Client
-                            </button>
-                            <a href="{{ route('oauth.client.index') }}" class="btn btn-secondary ml-2">
-                                <i class="fas fa-times"></i> Cancel
-                            </a>
-                        </div>
+                            {{-- App Portal URL --}}
+                            <div class="form-group" id="portal_url_group">
+                                <label for="app_portal_url">
+                                    <i class="fas fa-globe mr-1 text-info"></i> App Portal URL
+                                    <small class="text-muted">(optional)</small>
+                                </label>
+                                <input type="url" name="app_portal_url" id="app_portal_url" class="form-control @error('app_portal_url') is-invalid @enderror" value="{{ old('app_portal_url') }}" placeholder="https://client-app.example.com">
+                                @error('app_portal_url')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                                @enderror
+                                <small class="text-muted">
+                                    The public URL of this application. It will appear as a tile on the
+                                    <strong>SSO App Portal</strong> after users log in.
+                                    Leave blank to hide this app from the portal.
+                                </small>
+                            </div>
+
+                            {{-- App Icon --}}
+                            <div class="form-group">
+                                <label for="app_icon">
+                                    <i class="fas fa-icons mr-1 text-info"></i> Icon Class
+                                    <small class="text-muted">(optional)</small>
+                                </label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="icon-preview">
+                                            <i class="fas fa-th-large"></i>
+                                        </span>
+                                    </div>
+                                    <input type="text" name="app_icon" id="app_icon" class="form-control @error('app_icon') is-invalid @enderror" value="{{ old('app_icon', 'fas fa-th-large') }}" placeholder="fas fa-graduation-cap">
+                                    @error('app_icon')
+                                    <span class="invalid-feedback">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <small class="text-muted">
+                                    Font Awesome 5 icon class, e.g. <code>fas fa-graduation-cap</code>,
+                                    <code>fas fa-university</code>, <code>fas fa-laptop-code</code>.
+                                </small>
+                            </div>
+                            <div class="card-footer">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Create Client
+                                </button>
+                                <a href="{{ route('oauth.client.index') }}" class="btn btn-secondary ml-2">
+                                    <i class="fas fa-times"></i> Cancel
+                                </a>
+                            </div>
                     </form>
                 </div>
 

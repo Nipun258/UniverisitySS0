@@ -40,10 +40,12 @@ class OAuthClientController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'         => 'required|string|max:255',
-            'redirect'     => 'required|url',
-            'grant_type'   => 'required|in:authorization_code,client_credentials',
-            'confidential' => 'nullable|boolean',
+            'name'            => 'required|string|max:255',
+            'redirect'        => 'required|url',
+            'grant_type'      => 'required|in:authorization_code,client_credentials',
+            'confidential'    => 'nullable|boolean',
+            'app_portal_url'  => 'nullable|url|max:500',
+            'app_icon'        => 'nullable|string|max:100',
         ]);
 
         $confidential = $request->boolean('confidential', true);
@@ -84,6 +86,12 @@ class OAuthClientController extends Controller
             'grant'     => $request->grant_type,
         ]);
 
+        // Save portal info
+        $client->forceFill([
+            'app_portal_url' => $request->app_portal_url,
+            'app_icon'       => $request->app_icon,
+        ])->save();
+
         return redirect()->route('oauth.client.index');
     }
 
@@ -102,14 +110,18 @@ class OAuthClientController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'name'     => 'required|string|max:255',
-            'redirect' => 'required|string',
+            'name'           => 'required|string|max:255',
+            'redirect'       => 'required|string',
+            'app_portal_url' => 'nullable|url|max:500',
+            'app_icon'       => 'nullable|string|max:100',
         ]);
 
         $client = Client::findOrFail($id);
         $client->update([
-            'name'     => $request->name,
-            'redirect_uris' => [$request->redirect],   // Passport v13 stores as JSON array
+            'name'           => $request->name,
+            'redirect_uris'  => [$request->redirect],   // Passport v13 stores as JSON array
+            'app_portal_url' => $request->app_portal_url,
+            'app_icon'       => $request->app_icon,
         ]);
 
         return redirect()->route('oauth.client.index')
