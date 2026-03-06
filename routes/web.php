@@ -50,6 +50,9 @@ Route::group(['middleware' => 'prevent-back-history'], function () {
         Route::get('/users/{user}/roles/{role}', [UserController::class, 'removeRole'])->name('users.roles.remove')->middleware('permission:user.roles.remove');
         Route::post('/users/{user}/permissions', [UserController::class, 'givePermission'])->name('users.permissions')->middleware('permission:user.permissions.assign');
         Route::get('/users/{user}/permissions/{permission}', [UserController::class, 'revokePermission'])->name('users.permissions.revoke')->middleware('permission:user.permissions.revoke');
+
+        // SSO availability check – verify token validity and user status
+        Route::get('/availability', [UserController::class, 'userAvailability'])->name('user.availability');
     }); //user manage controller route list
 
 

@@ -30,7 +30,7 @@ return [
     'allowed_methods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 
     'allowed_origins' => array_filter(
-        explode(',', env('CORS_ALLOWED_ORIGINS', 'http://localhost:8001'))
+        explode(',', env('CORS_ALLOWED_ORIGINS', 'http://localhost:8001','http://localhost:8002'))
     ),
 
     'allowed_origins_patterns' => [],

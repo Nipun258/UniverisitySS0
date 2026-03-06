@@ -299,5 +299,65 @@ class UserController extends Controller implements HasMiddleware
     }
 
 
+    /**
+     * Check whether the current user's SSO token is still valid and the
+     * account is active by calling the SSO server's availability endpoint.
+     *
+     * SSO Server:  GET /api/availability
+     *              Authorization: Bearer <access_token>
+     *
+     * Possible outcomes:
+     *   200  { "available": true,  "user": { ... } }  → token is valid, user is active
+     *   403  { "available": false, "message": "..." } → token valid but account inactive
+     *   401  { "message": "Unauthenticated." }        → token missing / expired
+     */
+    public function userAvailability(Request $request)
+    {
+        $access_token = $request->session()->get('access_token');
+
+        if (!$access_token) {
+            return response()->json([
+                'available' => false,
+                'message'   => 'No access token found in session.',
+            ], 401);
+        }
+
+        $ssoBaseUrl = rtrim(config('sso.base_url'), '/');
+
+        $response = Http::withHeaders([
+            'Accept'        => 'application/json',
+            'Authorization' => 'Bearer ' . $access_token,
+        ])->get($ssoBaseUrl . '/api/availability');
+
+        // Token expired / invalid → redirect to login
+        if ($response->status() === 401) {
+            return response()->json([
+                'available' => false,
+                'message'   => 'Unauthenticated. Please log in again.',
+            ], 401);
+        }
+
+        // User account is inactive on the SSO side
+        if ($response->status() === 403) {
+            return response()->json([
+                'available' => false,
+                'message'   => $response->json('message', 'User account is inactive.'),
+            ], 403);
+        }
+
+        // Any unexpected error
+        if (!$response->successful()) {
+            return response()->json([
+                'available' => false,
+                'message'   => 'SSO availability check failed. Status: ' . $response->status(),
+            ], $response->status());
+        }
+
+        // 200 OK — token valid, user active
+        return response()->json([
+            'available' => true,
+            'user'      => $response->json('user'),
+        ], 200);
+    }
 
 }

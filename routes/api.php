@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AvailabilityController;
 use App\Http\Controllers\Api\PersonalTokenController;
 use App\Http\Controllers\Api\UserInfoController;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +26,14 @@ Route::middleware('auth:api')->group(function () {
     |----------------------------------------------------------------------
     */
     Route::get('/user', [UserInfoController::class, 'show']);
+
+    /*
+    |----------------------------------------------------------------------
+    | Availability Check – client apps call this to verify the token is
+    | still valid and the user account is active.
+    |----------------------------------------------------------------------
+    */
+    Route::get('/availability', [AvailabilityController::class, 'check']);
 
     /*
     |----------------------------------------------------------------------
