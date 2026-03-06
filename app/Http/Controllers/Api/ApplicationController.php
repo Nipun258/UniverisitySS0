@@ -24,9 +24,12 @@ class ApplicationController extends Controller
         // For now, we return all active portal applications for every authenticated user.
         // In the future, this could be filtered based on $request->user()->roles/permissions.
         
+        $masterClientUrl = config('sso.master_client_url') ?? env('SSO_MASTER_CLIENT_URL');
+
         $clients = Client::where('revoked', false)
             ->whereNotNull('app_portal_url')
             ->where('app_portal_url', '!=', '')
+            ->where('app_portal_url', '!=', $masterClientUrl) // Exclude the master client
             ->get()
             ->filter(function (Client $client) {
                 // Return only authorization_code clients (web apps)
